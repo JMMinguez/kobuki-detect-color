@@ -1,14 +1,22 @@
 follow_ball:
   ros__parameters:
     use_sim_time: true
-    max_vel: 1.0
+    max_vel: 0.75
     min_vel: 0.0
-    turn_right_vel: 0.3
-    turn_left_vel: -0.3
+    turn_right_vel: -0.3
+    turn_left_vel: 0.3
+
+hsv_filter_node:
+  ros__parameters:
+    use_sim_time: true
     min_h: 49
     max_h: 180
     min_s: 200
     max_s: 255
     min_v: 0
     max_v: 255
-    min_distance: 1
+
+obstacle_detector_node:
+  ros__parameters:
+    use_sim_time: true
+    min_distance: 1.0

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <memory>
 #include <algorithm>
 
 #include "rclcpp/rclcpp.hpp"
@@ -30,6 +31,16 @@ namespace follow_ball_cpp
 FollowBall::FollowBall()
 : Node("follow_ball")
 {
+  declare_parameter("max_vel", 0.75);
+  declare_parameter("min_vel", 0.0);
+  declare_parameter("turn_right_vel", -0.3);
+  declare_parameter("turn_left_vel", 0.3);
+  
+  get_parameter("max_vel", max_vel_);
+  get_parameter("min_vel", min_vel_);
+  get_parameter("turn_right_vel", turn_right_vel_);
+  get_parameter("turn_left_vel", turn_left_vel_);
+
   r_vector_sub_ = create_subscription<geometry_msgs::msg::Vector3>(
     "repulsive_vector", 10,
     std::bind(&FollowBall::r_vector_callback, this, _1));
@@ -86,8 +97,8 @@ FollowBall::follow_objective()
       objective_vector_.x = std::abs(last_attractive_vector_.x + last_repulsive_vector_.x);
       objective_vector_.y = atan2(last_attractive_vector_.x + last_repulsive_vector_.x, last_attractive_vector_.y + last_repulsive_vector_.y);
 
-      current_vel_.linear.x = std::clamp(objective_vector_.x, min_vel, max_vel);
-      current_vel_.angular.z = std::clamp(objective_vector_.y, min_vel, max_vel);
+      current_vel_.linear.x = std::clamp(objective_vector_.x, min_vel_, max_vel_);
+      current_vel_.angular.z = std::clamp(objective_vector_.y, min_vel_, max_vel_);
       
       std::cerr << "velx: \t" << current_vel_.linear.x << std::endl;
       std::cerr << "velz: \t" << current_vel_.angular.z << std::endl;
@@ -103,7 +114,7 @@ FollowBall::follow_objective()
     case RIGHT_TURN:
       std::cerr << "RIGHT: \t" << std::endl;
       current_vel_.linear.x = 0;
-      current_vel_.angular.z = 0.3;
+      current_vel_.angular.z = turn_right_vel_;
 
       vel_pub_->publish(current_vel_);
       if (is_object.data) {
@@ -114,7 +125,7 @@ FollowBall::follow_objective()
     case LEFT_TURN:
       std::cerr << "LEFT: \t" << std::endl;
       current_vel_.linear.x = 0;
-      current_vel_.angular.z = 0.3;
+      current_vel_.angular.z = turn_left_vel_;
 
       vel_pub_->publish(current_vel_);
       if (is_object.data) {

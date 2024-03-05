@@ -46,7 +46,6 @@ private:
   geometry_msgs::msg::Vector3 last_repulsive_vector_;
   geometry_msgs::msg::Vector3 last_attractive_vector_;
   geometry_msgs::msg::Vector3 objective_vector_;
-
   rclcpp::TimerBase::SharedPtr timer_;
 
   std_msgs::msg::Bool is_object;
@@ -55,9 +54,7 @@ private:
   static const int RIGHT_TURN = 1;
   static const int LEFT_TURN = 2;
   
-  double turn_right_vel, turn_left_vel;
-  double min_vel = 0.0;
-  double max_vel = 1.0;
+  double turn_right_vel_, turn_left_vel_, max_vel_, min_vel_;
   int state_;
   bool lost_right_;
 };
