@@ -1,7 +1,7 @@
 follow_ball:
   ros__parameters:
     use_sim_time: true
-    max_vel: 1
-    min_vel: 0
+    max_vel: 1.0
+    min_vel: 0.0
     turn_right_vel: 0.3
     turn_left_vel: -0.3

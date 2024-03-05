@@ -33,6 +33,8 @@ private:
   void a_vector_callback(const geometry_msgs::msg::Vector3::SharedPtr msg);
   void object_callback(const std_msgs::msg::Bool::SharedPtr msg);
   void follow_objective();
+  void go_state(int new_state);
+  void check_turn();
 
   rclcpp::Subscription<geometry_msgs::msg::Vector3>::SharedPtr r_vector_sub_;
   rclcpp::Subscription<geometry_msgs::msg::Vector3>::SharedPtr a_vector_sub_;
@@ -52,8 +54,10 @@ private:
   static const int FOLLOW = 0;
   static const int RIGHT_TURN = 1;
   static const int LEFT_TURN = 2;
-
+  
+  double turn_right_vel, turn_left_vel, min_vel, max_vel;
   int state_;
+  bool lost_right_;
 };
 
 }  //  namespace follow_ball_cpp

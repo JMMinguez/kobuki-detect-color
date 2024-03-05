@@ -3,7 +3,7 @@
 <package format="3">
   <name>follow_ball_cpp</name>
   <version>0.0.0</version>
-  <description>Example for perception</description>
+  <description>Follow by color and object node</description>
   <maintainer email="j.martinm.2021@alumnos.urjc.es">jmartinm2021</maintainer>
   <license>Apache License, Version 2.0</license>
 

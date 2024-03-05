@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
+
 #include "rclcpp/rclcpp.hpp"
 
 #include "geometry_msgs/msg/vector3.hpp"
@@ -55,6 +57,13 @@ void
 FollowBall::a_vector_callback(const geometry_msgs::msg::Vector3::SharedPtr msg)
 {
   last_attractive_vector_ = *msg;
+  if (is_object.data) {
+    if (last_attractive_vector_.x >= 320) {
+        lost_right_ = true;
+    } else {
+        lost_right_ = false;
+    }
+  }
 }
 
 void
@@ -71,20 +80,50 @@ FollowBall::follow_objective()
       objective_vector_.x = last_attractive_vector_.x + last_repulsive_vector_.x;
       objective_vector_.y = last_attractive_vector_.y + last_repulsive_vector_.y;
 
-      current_vel_.linear.x = objective_vector_.x;
-      current_vel_.angular.z = objective_vector_.y;
+      current_vel_.linear.x = std::clamp(objective_vector_.x, min_vel, max_vel);
+      current_vel_.angular.z = std::clamp(objective_vector_.y, min_vel, max_vel);
 
       vel_pub_->publish(current_vel_);
-
+      if (!is_object.data) {
+        check_turn();
+      }
       break;
     
     case RIGHT_TURN:
+      current_vel_.linear.x = 0;
+      current_vel_.angular.z = turn_right_vel;
+
+      vel_pub_->publish(current_vel_);
+      if (is_object.data) {
+        go_state(FOLLOW);
+      }
       break;
     
     case LEFT_TURN:
+      current_vel_.linear.x = 0;
+      current_vel_.angular.z = turn_left_vel;
+
+      vel_pub_->publish(current_vel_);
+      if (is_object.data) {
+        go_state(FOLLOW);
+      }
       break;
   }
-    
+}
 
+void
+FollowBall::go_state(int new_state)
+{
+  state_ = new_state;
+}
+
+void
+FollowBall::check_turn()
+{
+  if (lost_right_) {
+    go_state(RIGHT_TURN);
+  } else {
+    go_state(LEFT_TURN);
+  }
 }
 }  //  namespace follow_ball_cpp

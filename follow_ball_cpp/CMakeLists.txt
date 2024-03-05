@@ -28,6 +28,7 @@ add_executable(follow_ball_main src/follow_ball_main.cpp)
 ament_target_dependencies(follow_ball_main ${dependencies})
 target_link_libraries(follow_ball_main ${PROJECT_NAME})
 
+install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   ${PROJECT_NAME}
@@ -36,7 +37,6 @@ install(TARGETS
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
-
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
