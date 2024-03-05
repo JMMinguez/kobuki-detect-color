@@ -5,3 +5,10 @@ follow_ball:
     min_vel: 0.0
     turn_right_vel: 0.3
     turn_left_vel: -0.3
+    min_h: 49
+    max_h: 180
+    min_s: 200
+    max_s: 255
+    min_v: 0
+    max_v: 255
+    min_distance: 1

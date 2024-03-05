@@ -55,7 +55,9 @@ private:
   static const int RIGHT_TURN = 1;
   static const int LEFT_TURN = 2;
   
-  double turn_right_vel, turn_left_vel, min_vel, max_vel;
+  double turn_right_vel, turn_left_vel;
+  double min_vel = 0.0;
+  double max_vel = 1.0;
   int state_;
   bool lost_right_;
 };

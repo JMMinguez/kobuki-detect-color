@@ -51,14 +51,19 @@ void
 FollowBall::r_vector_callback(const geometry_msgs::msg::Vector3::SharedPtr msg)
 {
   last_repulsive_vector_ = *msg;
+  std::cerr << "r_vector: \t" << last_repulsive_vector_.x << std::endl;
+  std::cerr << "r_vector: \t" << last_repulsive_vector_.y << std::endl;
+
 }
 
 void
 FollowBall::a_vector_callback(const geometry_msgs::msg::Vector3::SharedPtr msg)
 {
   last_attractive_vector_ = *msg;
+  std::cerr << "a_vector: \t" << last_attractive_vector_.x << std::endl;
+  std::cerr << "a_vector: \t" << last_attractive_vector_.y << std::endl;
   if (is_object.data) {
-    if (last_attractive_vector_.x >= 320) {
+    if (last_attractive_vector_.x >= 0) {
         lost_right_ = true;
     } else {
         lost_right_ = false;
@@ -70,6 +75,7 @@ void
 FollowBall::object_callback(const std_msgs::msg::Bool::SharedPtr msg)
 {
   is_object = *msg;
+  std::cerr << "OBJECT: \t" << is_object.data << std::endl;
 }
 
 void
@@ -77,11 +83,16 @@ FollowBall::follow_objective()
 {
   switch (state_) {
     case FOLLOW:
-      objective_vector_.x = last_attractive_vector_.x + last_repulsive_vector_.x;
-      objective_vector_.y = last_attractive_vector_.y + last_repulsive_vector_.y;
+      objective_vector_.x = std::abs(last_attractive_vector_.x + last_repulsive_vector_.x);
+      objective_vector_.y = atan2(last_attractive_vector_.x + last_repulsive_vector_.x, last_attractive_vector_.y + last_repulsive_vector_.y);
 
       current_vel_.linear.x = std::clamp(objective_vector_.x, min_vel, max_vel);
       current_vel_.angular.z = std::clamp(objective_vector_.y, min_vel, max_vel);
+      
+      std::cerr << "velx: \t" << current_vel_.linear.x << std::endl;
+      std::cerr << "velz: \t" << current_vel_.angular.z << std::endl;
+
+      std::cerr << "FOLLOW: \t" << std::endl;
 
       vel_pub_->publish(current_vel_);
       if (!is_object.data) {
@@ -90,8 +101,9 @@ FollowBall::follow_objective()
       break;
     
     case RIGHT_TURN:
+      std::cerr << "RIGHT: \t" << std::endl;
       current_vel_.linear.x = 0;
-      current_vel_.angular.z = turn_right_vel;
+      current_vel_.angular.z = 0.3;
 
       vel_pub_->publish(current_vel_);
       if (is_object.data) {
@@ -100,8 +112,9 @@ FollowBall::follow_objective()
       break;
     
     case LEFT_TURN:
+      std::cerr << "LEFT: \t" << std::endl;
       current_vel_.linear.x = 0;
-      current_vel_.angular.z = turn_left_vel;
+      current_vel_.angular.z = 0.3;
 
       vel_pub_->publish(current_vel_);
       if (is_object.data) {
