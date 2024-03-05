@@ -20,21 +20,21 @@ HSVFilterNode::HSVFilterNode()
 void
 HSVFilterNode::image_callback(const sensor_msgs::msg::Image::ConstSharedPtr & image)
 {
-  object_msg.data = true;
-
-  cv::Rect bbx = cv::boundingRect(image_filtered);
   if (bbx.width == 0 || bbx.height == 0) {
-    RCLCPP_WARN(get_logger(), "Object not detected");
-    return;
     object_msg.data = false;
+    object_pub_->publish(object_msg);
+    return;
+    
+  } else {
+    object_msg.data = true;
+    object_pub_->publish(object_msg);
   }
 
   cv::Point2d point = get_detected_center(image_filtered);
-  attractive_vector_msg.x = point.x;
-  attractive_vector_msg.y = point.y;
+  attractive_vector_msg.x = point.x - image_cv.cols / 2;
+  attractive_vector_msg.y = point.y - image_cv.rows / 2;
   attractive_vector_msg.z = 0.0;
 
-  object_pub_->publish(object_msg);
   a_vector_pub_->publish(attractive_vector_msg);
 }
 ```
