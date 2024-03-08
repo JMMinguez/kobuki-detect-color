@@ -31,9 +31,15 @@ HSVFilterNode::image_callback(const sensor_msgs::msg::Image::ConstSharedPtr & im
   }
 
   cv::Point2d point = get_detected_center(image_filtered);
-  attractive_vector_msg.x = point.x - image_cv.cols / 2;
-  attractive_vector_msg.y = point.y - image_cv.rows / 2;
-  attractive_vector_msg.z = 0.0;
+  auto [yaw, pitch] = get_detected_angles(point, model_);
+  x = cos(yaw) * cos(pitch);
+  y = sin(yaw) * cos(pitch);
+  z = sin(pitch);
+  magnitude = sqrt(x*x + y*y + z*z);
+
+  attractive_vector_msg.x = x / magnitude;
+  attractive_vector_msg.y = y / magnitude;
+  attractive_vector_msg.z = z / magnitude;
 
   a_vector_pub_->publish(attractive_vector_msg);
 }
@@ -51,8 +57,10 @@ void
 ObstacleDetectorNode::laser_callback(const sensor_msgs::msg::LaserScan::ConstSharedPtr & scan)
 {
   if (distance_min < 1) {
-    repulsive_vector_msg.x = -distance_min * cos(angle);
-    repulsive_vector_msg.y = -distance_min * sin(angle);
+    float repulsion = 1.0 / distance_min;
+    obstacle_msg.data = true;
+    repulsive_vector_msg.x = -repulsion * cos(angle);
+    repulsive_vector_msg.y = -repulsion * sin(angle);
     repulsive_vector_msg.z = 0.0;
 
   } else {
