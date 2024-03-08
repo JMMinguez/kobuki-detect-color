@@ -51,7 +51,7 @@ FollowBall::FollowBall()
   vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
 
   timer_ = create_wall_timer(
-    50ms, std::bind(&FollowBall::follow_objective, this));
+    100ms, std::bind(&FollowBall::follow_objective, this));
 
   object_sub_ = create_subscription<std_msgs::msg::Bool>(
     "object", 10,
@@ -95,10 +95,13 @@ FollowBall::follow_objective()
   switch (state_) {
     case FOLLOW:
       objective_vector_.x = std::abs(last_attractive_vector_.x + last_repulsive_vector_.x);
-      objective_vector_.y = atan2(last_attractive_vector_.x + last_repulsive_vector_.x, last_attractive_vector_.y + last_repulsive_vector_.y);
+      objective_vector_.y = last_attractive_vector_.y + last_repulsive_vector_.y;
 
-      current_vel_.linear.x = std::clamp(objective_vector_.x, min_vel_, max_vel_);
-      current_vel_.angular.z = std::clamp(objective_vector_.y, min_vel_, max_vel_);
+      current_vel_.linear.x = sqrt(objective_vector_.x * objective_vector_.x + objective_vector_.y * objective_vector_.y);
+      current_vel_.angular.z = atan2(objective_vector_.y, objective_vector_.x);
+
+      current_vel_.linear.x = std::clamp(current_vel_.linear.x, min_vel_, max_vel_);
+      current_vel_.angular.z = std::clamp(current_vel_.angular.z, min_vel_, max_vel_);
       
       std::cerr << "velx: \t" << current_vel_.linear.x << std::endl;
       std::cerr << "velz: \t" << current_vel_.angular.z << std::endl;
@@ -133,6 +136,8 @@ FollowBall::follow_objective()
       }
       break;
   }
+  last_repulsive_vector_.x = 0.0;
+  last_repulsive_vector_.y = 0.0;
 }
 
 void
