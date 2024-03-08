@@ -24,29 +24,33 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory('follow_ball_cpp')
     param_file = os.path.join(pkg_dir, 'config', 'params.yaml')
 
-    follow_cmd = Node(package='follow_ball_cpp',
-                        executable='follow_ball_main',
-                        output='screen',
-                        parameters=[param_file],
-                        remappings=[]
-                        )
-    
-    camera_cmd = Node(package='camera',
-                        executable='hsv_filter',
-                        output='screen',
-                        parameters=[param_file],
-                        remappings=[
-                          ('input_image', '/camera/image_raw'),
-                          ('camera_info', '/camera/camera_info'),
-                        ])
+    follow_cmd = Node(
+        package='follow_ball_cpp',
+        executable='follow_ball_main',
+        output='screen',
+        parameters=[param_file],
+    )
 
-    laser_cmd = Node(package='laser',
-                        executable='obstacle_detector',
-                        output='screen',
-                        parameters=[param_file],
-                        remappings=[
-                          ('input_scan', '/scan')
-                        ])
+    camera_cmd = Node(
+        package='camera',
+        executable='hsv_filter',
+        output='screen',
+        parameters=[param_file],
+        remappings=[
+          ('input_image', '/camera/image_raw'),
+          ('camera_info', '/camera/camera_info'),
+        ]
+    )
+
+    laser_cmd = Node(
+        package='laser',
+        executable='obstacle_detector',
+        output='screen',
+        parameters=[param_file],
+        remappings=[
+            ('input_scan', '/scan')
+        ]
+    )
 
     ld = LaunchDescription()
     ld.add_action(follow_cmd)

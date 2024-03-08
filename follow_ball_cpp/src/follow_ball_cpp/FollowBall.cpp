@@ -35,7 +35,7 @@ FollowBall::FollowBall()
   declare_parameter("min_vel", 0.0);
   declare_parameter("turn_right_vel", -0.3);
   declare_parameter("turn_left_vel", 0.3);
-  
+
   get_parameter("max_vel", max_vel_);
   get_parameter("min_vel", min_vel_);
   get_parameter("turn_right_vel", turn_right_vel_);
@@ -75,9 +75,9 @@ FollowBall::a_vector_callback(const geometry_msgs::msg::Vector3::SharedPtr msg)
   std::cerr << "a_vector: \t" << last_attractive_vector_.y << std::endl;
   if (is_object.data) {
     if (last_attractive_vector_.x >= 0) {
-        lost_right_ = true;
+      lost_right_ = true;
     } else {
-        lost_right_ = false;
+      lost_right_ = false;
     }
   }
 }
@@ -97,12 +97,13 @@ FollowBall::follow_objective()
       objective_vector_.x = std::abs(last_attractive_vector_.x + last_repulsive_vector_.x);
       objective_vector_.y = last_attractive_vector_.y + last_repulsive_vector_.y;
 
-      current_vel_.linear.x = sqrt(objective_vector_.x * objective_vector_.x + objective_vector_.y * objective_vector_.y);
+      current_vel_.linear.x = sqrt(
+        objective_vector_.x * objective_vector_.x + objective_vector_.y * objective_vector_.y);
       current_vel_.angular.z = atan2(objective_vector_.y, objective_vector_.x);
 
       current_vel_.linear.x = std::clamp(current_vel_.linear.x, min_vel_, max_vel_);
       current_vel_.angular.z = std::clamp(current_vel_.angular.z, min_vel_, max_vel_);
-      
+
       std::cerr << "velx: \t" << current_vel_.linear.x << std::endl;
       std::cerr << "velz: \t" << current_vel_.angular.z << std::endl;
 
@@ -113,7 +114,7 @@ FollowBall::follow_objective()
         check_turn();
       }
       break;
-    
+
     case RIGHT_TURN:
       std::cerr << "RIGHT: \t" << std::endl;
       current_vel_.linear.x = 0;
@@ -124,7 +125,7 @@ FollowBall::follow_objective()
         go_state(FOLLOW);
       }
       break;
-    
+
     case LEFT_TURN:
       std::cerr << "LEFT: \t" << std::endl;
       current_vel_.linear.x = 0;

@@ -53,7 +53,7 @@ private:
   static const int FOLLOW = 0;
   static const int RIGHT_TURN = 1;
   static const int LEFT_TURN = 2;
-  
+
   double turn_right_vel_, turn_left_vel_, max_vel_, min_vel_;
   int state_;
   bool lost_right_;
