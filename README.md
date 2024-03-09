@@ -82,7 +82,8 @@ case FOLLOW:
   objective_vector_.x = std::abs(last_attractive_vector_.x + last_repulsive_vector_.x);
   objective_vector_.y = last_attractive_vector_.y + last_repulsive_vector_.y;
 
-  current_vel_.linear.x = sqrt(objective_vector_.x * objective_vector_.x + objective_vector_.y * objective_vector_.y);
+  current_vel_.linear.x = sqrt(
+    objective_vector_.x * objective_vector_.x + objective_vector_.y * objective_vector_.y);
   current_vel_.angular.z = atan2(objective_vector_.y, objective_vector_.x);
 
   current_vel_.linear.x = std::clamp(current_vel_.linear.x, min_vel_, max_vel_);
