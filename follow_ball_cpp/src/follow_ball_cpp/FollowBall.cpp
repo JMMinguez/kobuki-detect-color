@@ -31,13 +31,15 @@ namespace follow_ball_cpp
 FollowBall::FollowBall()
 : Node("follow_ball")
 {
-  declare_parameter("max_vel", 0.75);
-  declare_parameter("min_vel", 0.0);
-  declare_parameter("turn_right_vel", -0.3);
-  declare_parameter("turn_left_vel", 0.3);
+  declare_parameter("max_vel", 0.25);
+  declare_parameter("min_l_vel", 0.0);
+  declare_parameter("min_a_vel", -0.25);
+  declare_parameter("turn_right_vel", -0.25);
+  declare_parameter("turn_left_vel", 0.25);
 
   get_parameter("max_vel", max_vel_);
-  get_parameter("min_vel", min_vel_);
+  get_parameter("min_l_vel", min_l_vel_);
+  get_parameter("min_a_vel", min_a_vel_);
   get_parameter("turn_right_vel", turn_right_vel_);
   get_parameter("turn_left_vel", turn_left_vel_);
 
@@ -62,8 +64,8 @@ void
 FollowBall::r_vector_callback(const geometry_msgs::msg::Vector3::SharedPtr msg)
 {
   last_repulsive_vector_ = *msg;
-  std::cerr << "r_vector: \t" << last_repulsive_vector_.x << std::endl;
-  std::cerr << "r_vector: \t" << last_repulsive_vector_.y << std::endl;
+  // std::cerr << "r_vector: \t" << last_repulsive_vector_.x << std::endl;
+  // std::cerr << "r_vector: \t" << last_repulsive_vector_.y << std::endl;
 
 }
 
@@ -71,8 +73,8 @@ void
 FollowBall::a_vector_callback(const geometry_msgs::msg::Vector3::SharedPtr msg)
 {
   last_attractive_vector_ = *msg;
-  std::cerr << "a_vector: \t" << last_attractive_vector_.x << std::endl;
-  std::cerr << "a_vector: \t" << last_attractive_vector_.y << std::endl;
+  // std::cerr << "a_vector: \t" << last_attractive_vector_.x << std::endl;
+  // std::cerr << "a_vector: \t" << last_attractive_vector_.y << std::endl;
   if (is_object.data) {
     if (last_attractive_vector_.x >= 0) {
       lost_right_ = true;
@@ -101,8 +103,8 @@ FollowBall::follow_objective()
         objective_vector_.x * objective_vector_.x + objective_vector_.y * objective_vector_.y);
       current_vel_.angular.z = atan2(objective_vector_.y, objective_vector_.x);
 
-      current_vel_.linear.x = std::clamp(current_vel_.linear.x, min_vel_, max_vel_);
-      current_vel_.angular.z = std::clamp(current_vel_.angular.z, min_vel_, max_vel_);
+      current_vel_.linear.x = std::clamp(current_vel_.linear.x, min_l_vel_, max_vel_);
+      current_vel_.angular.z = std::clamp(current_vel_.angular.z, min_a_vel_, max_vel_);
 
       std::cerr << "velx: \t" << current_vel_.linear.x << std::endl;
       std::cerr << "velz: \t" << current_vel_.angular.z << std::endl;

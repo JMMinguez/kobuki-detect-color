@@ -21,40 +21,19 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    pkg_dir = get_package_share_directory('follow_ball_cpp')
+    pkg_dir = get_package_share_directory('camera')
     param_file = os.path.join(pkg_dir, 'config', 'params.yaml')
 
-    follow_cmd = Node(
-        package='follow_ball_cpp',
-        executable='follow_ball_main',
-        output='screen',
-        parameters=[param_file],
-    )
-
-    camera_cmd = Node(
-        package='camera',
-        executable='hsv_filter',
-        output='screen',
-        parameters=[param_file],
-        remappings=[
-          ('input_image', '/camera/color/image_raw'),
-          ('camera_info', '/camera/color/camera_info'),
-        ]
-    )
-
-    laser_cmd = Node(
-        package='laser',
-        executable='obstacle_detector',
-        output='screen',
-        parameters=[param_file],
-        remappings=[
-            ('input_scan', '/scan')
-        ]
-    )
+    detector_cmd = Node(package='camera',
+                        executable='hsv_filter',
+                        output='screen',
+                        parameters=[param_file],
+                        remappings=[
+                          ('input_image', '/camera/color/image_raw'),
+                          ('camera_info', '/camera/color/camera_info'),
+                        ])
 
     ld = LaunchDescription()
-    ld.add_action(follow_cmd)
-    ld.add_action(camera_cmd)
-    ld.add_action(laser_cmd)
+    ld.add_action(detector_cmd)
 
     return ld
